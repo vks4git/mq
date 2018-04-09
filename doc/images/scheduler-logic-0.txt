@@ -1,0 +1,5 @@
+digraph depsh {
+  rankdir = TB;
+  "Some component" -> "Scheduler"
+  "Scheduler" -> "All components" [ color=Blue, style=dashed ]
+}

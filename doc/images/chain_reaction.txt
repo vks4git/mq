@@ -1,0 +1,9 @@
+digraph kill_logic {
+    Component0 [label="Component 0", shape=rectangle]
+    Component1 [label="Component 1", shape=rectangle]
+    Component2 [label="Component 2", shape=rectangle]
+    KillMsg [label="Kill message", shape=ellipse]
+    KillMsg -> Component1 [label="kill"]
+    Component1 -> Component2 [label="kill"]
+    Component1 -> Component0 [label="error"]
+  }

@@ -1,0 +1,13 @@
+digraph schedcomp{
+                Scheduler [label="Scheduler", shape=ellipse]
+                Controller [label="Controller", shape=ellipse]
+                Component [label="Component", shape=rectangle]
+
+                Scheduler -> Controller [label="1", color=Blue, style=dashed]
+                Controller -> Component [label="1"] 
+                Scheduler -> Component [label="2", color=Blue, style=dashed]
+                Component -> Scheduler [label="3"]
+                Scheduler -> Component [label="4", color=Blue, style=dashed]
+                Component -> Scheduler [label="5"]
+
+}

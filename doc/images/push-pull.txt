@@ -1,0 +1,12 @@
+digraph pushpull {
+  rankdir = TB;
+  worker1 [label="Worker"]
+  worker2 [label="Worker"]
+  worker3 [label="Worker"]
+  "Ventilator" -> worker1
+  "Ventilator" -> worker2
+  "Ventilator" -> worker3
+  worker1 -> "Sink"
+  worker2 -> "Sink" 
+  worker3 -> "Sink" 
+}

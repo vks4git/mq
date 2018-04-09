@@ -1,0 +1,9 @@
+digraph pubsub {
+  rankdir = TB;
+  sub1 [label="Subscriber"]
+  sub2 [label="Subscriber"]
+  sub3 [label="Subscriber"]
+  "Publisher" -> sub1 [color=Blue, style=dashed]
+  "Publisher" -> sub2 [color=Blue, style=dashed]
+  "Publisher" -> sub3 [color=Blue, style=dashed]
+}
