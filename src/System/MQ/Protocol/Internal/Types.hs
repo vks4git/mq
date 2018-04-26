@@ -82,4 +82,4 @@ instance Read MessageType where
   readsPrec _ "result" = [(Result, "")]
   readsPrec _ "error"  = [(Error, "")]
   readsPrec _ "data"   = [(Data, "")]
-  readsPrec _ _        = error "Could not read MessageType"
+  readsPrec _ _        = []

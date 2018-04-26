@@ -37,11 +37,10 @@ instance MessageLike KillConfig where
 
 -- | Format of data that is produced as result of monitoring task
 --
-data MonitoringData = MonitoringData { mSyncTime  :: Timestamp
-                                     , mName      :: String
-                                     , mHost      :: String
-                                     , mIsRunning :: Bool
-                                     , mMessage   :: String
+data MonitoringData = MonitoringData { mSyncTime :: Timestamp
+                                     , mName     :: String
+                                     , mIsAlive  :: Bool
+                                     , mMessage  :: String
                                      }
   deriving (Eq, Show, Generic)
 
