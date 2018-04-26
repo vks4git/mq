@@ -4,14 +4,20 @@ synopsis:            Package with monique core
 description:
   The package covers:
   .
+    * monique monad module                    
+  .
     * protocol module
   .
+    * transport module
+  .                  
     * scheduler module
+  .
+    * encoding module
 
 homepage:            https://github.com/biocad/mq
 license:             BSD3
 license-file:        LICENSE
-author:              Bogdan Neterebskii, Vladimir Morozov, Sofya Kochkova, Alexander Sadovnikov
+author:              Bogdan Neterebskii, Vladimir Morozov, Alexander Sadovnikov
 maintainer:          neterebskiy@biocad.ru
 copyright:           (c) 2018, BIOCAD
 category:            System
@@ -21,12 +27,72 @@ cabal-version:       >=1.10
 
 library
   hs-source-dirs:      src
-  exposed-modules:     
-  other-modules:       
+  exposed-modules:     System.MQ.Transport
+                     , System.MQ.Transport.ByteString
+                     , System.MQ.Scheduler
+                     , System.MQ.Protocol 
+                     , System.MQ.Protocol.Technical
+                     , System.MQ.Protocol.Class
+                     , System.MQ.Monad
+                     , System.MQ.Encoding.MessagePack
+                     , System.MQ.Encoding.JSON
+  other-modules:       System.MQ.Protocol.Internal.Types 
+                     , System.MQ.Protocol.Internal.Functions
+                     , System.MQ.Protocol.Internal.Instances 
+                     , System.MQ.Protocol.Internal.Tag 
+                     , System.MQ.Protocol.Internal.Condition
+                     
+                     , System.MQ.Scheduler.Internal.Config
+                     , System.MQ.Scheduler.Internal.In
+                     , System.MQ.Scheduler.Internal.Logic
+                     , System.MQ.Scheduler.Internal.Out
+
+                     , System.MQ.Transport.Internal.Types
+                     , System.MQ.Transport.Internal.Instances
   build-depends:       base >= 4.7 && < 5
+                     , aeson
+                     , aeson-casing
+                     , aeson-picker
+                     , base64-bytestring
+                     , bcd-config
+                     , bytestring
+                     , clock
+                     , containers
+                     , cryptohash-sha1
+                     , data-msgpack
+                     , data-msgpack-types
+                     , hslogger
+                     , mtl
+                     , semigroups
+                     , split
+                     , zeromq4-haskell
   ghc-options:         -Wall -O2
   default-language:    Haskell2010
 
+executable scheduler-in
+  hs-source-dirs:      app
+  main-is:             SchedulerIn.hs
+  build-depends:       base
+                     , mq
+  default-language:    Haskell2010
+  ghc-options:         -threaded -rtsopts -with-rtsopts=-N -Wall -O2
+
+executable scheduler-logic
+  hs-source-dirs:      app
+  main-is:             SchedulerLogic.hs
+  build-depends:       base
+                     , mq
+  default-language:    Haskell2010
+  ghc-options:         -threaded -rtsopts -with-rtsopts=-N -Wall -O2
+
+executable scheduler-out
+  hs-source-dirs:      app
+  main-is:             SchedulerOut.hs
+  build-depends:       base
+                     , mq
+  default-language:    Haskell2010
+  ghc-options:         -threaded -rtsopts -with-rtsopts=-N -Wall -O2
+  
 
 source-repository head
   type:     git

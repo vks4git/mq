@@ -59,8 +59,7 @@ content:
   { 
     sync_time  :: Timestamp,
     name       :: String,
-    host       :: String,
-    is_running :: Bool,
+    is_alive   :: Bool
     message    :: String
   }
 }
