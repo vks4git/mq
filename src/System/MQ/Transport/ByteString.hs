@@ -12,6 +12,8 @@ module System.MQ.Transport.ByteString
 import           Control.Monad.Except
 import qualified Data.ByteString                    as BS (ByteString, split)
 import           Data.List.NonEmpty                 (NonEmpty (..))
+import           Data.Maybe                         (fromJust, isJust)
+import qualified System.MQ.Encoding.MessagePack     as MP (unpack)
 import           System.MQ.Monad                    (MQError (..), MQMonad)
 import           System.MQ.Protocol                 (delimiter)
 import           System.MQ.Transport.Internal.Types (PubChannel, PullChannel,
@@ -30,7 +32,7 @@ pull :: PullChannel -> MQMonad (BS.ByteString, BS.ByteString)
 pull channel = do
     msg' <- liftIO . receiveMulti $ channel
     processMessage msg'
-    
+
 -- | Publishes @(tag, content)@ to the 'PubChannel'.
 --
 pub :: PubChannel -> (BS.ByteString, BS.ByteString) -> MQMonad ()
@@ -42,16 +44,19 @@ sub :: SubChannel -> MQMonad (BS.ByteString, BS.ByteString)
 sub channel = do
     msg' <- liftIO . receiveMulti $ channel
     processMessage msg'
-    
+
 processMessage :: [BS.ByteString] -> MQMonad (BS.ByteString, BS.ByteString)
 processMessage [msgTag, msgContent] = if tagIsValid msgTag
                                       then pure (msgTag, msgContent)
-                                      else throwError . MQTransportError $ "tag is not valid (not consists from 5 fields)."
+                                      else throwError . MQTransportError $ "tag is not valid."
 processMessage list = throwError . MQTransportError . printf "expected message with [header, body]; received list with %d element(s)." $ length list
 
 tagIsValid :: BS.ByteString -> Bool
-tagIsValid = (== 5) . length . BS.split delimiter
+tagIsValid bs = isMessagePack && length delimited == 5 && head delimited `elem` msgTypes
+  where
+    tagUnpackedM = MP.unpack bs
+    isMessagePack = isJust tagUnpackedM
 
+    delimited = BS.split delimiter $ fromJust tagUnpackedM
 
-
-
+    msgTypes = ["config", "result", "data", "error"]
