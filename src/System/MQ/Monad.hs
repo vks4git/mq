@@ -32,7 +32,7 @@ runMQMonad :: MQMonad a -> IO a
 runMQMonad m = either renderError pure =<< runExceptT (unMQMonad m)
   where
     renderError :: MQError -> IO a
-    renderError ms = ms `seq` print ms >> error "Shit happens"
+    renderError ms = ms `seq` error (msg ms)
 
 -- | 'errorHandler' logs message with error @err@ for the component with name @name@
 --

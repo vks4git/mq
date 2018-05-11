@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [0.1.0.4] - 2018-05-11
+### Changed
+- New error handling during execution of runMQMonad
+
 ## [0.1.0.3] - 2018-04-28
 ### Changed
 - New logic for validation of tags
