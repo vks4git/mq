@@ -11,15 +11,15 @@ module System.MQ.Protocol.Internal.Tag
   , delimiter
   ) where
 
-import           Data.ByteString                   (ByteString, intercalate,
-                                                    split)
+import           Data.ByteString                   (intercalate, split)
 import           Data.ByteString.Char8             as BS8 (unpack)
 import           Data.Char                         (ord)
 import           Data.String                       (IsString (..))
 import           Data.Word                         (Word8)
-import           System.MQ.Protocol.Internal.Types (Hash, Message (..),
+import           System.MQ.Protocol.Internal.Types (Creator, Hash, Message (..),
                                                     MessageTag,
-                                                    MessageType (..))
+                                                    MessageType (..), Spec)
+
 
 -- | Build a 'MessageTag' for the given message.
 -- It is consists of five fields – message_type, spec, id, pid, creator – separated by ":".
@@ -38,8 +38,8 @@ messageTag = intercalate ":" . ([fromString . show . msgType, fromString . msgSp
 messageType :: MessageTag -> MessageType
 messageType = read . BS8.unpack . head . split delimiter
 
-messageSpec :: MessageTag -> ByteString
-messageSpec = (!! 1) . split delimiter
+messageSpec :: MessageTag -> Spec
+messageSpec = BS8.unpack . (!! 1) . split delimiter
 
 messageId :: MessageTag -> Hash
 messageId = (!! 2) . split delimiter
@@ -47,8 +47,8 @@ messageId = (!! 2) . split delimiter
 messagePid :: MessageTag -> Hash
 messagePid = (!! 3) . split delimiter
 
-messageCreator :: MessageTag -> ByteString
-messageCreator = (!! 4) . split delimiter
+messageCreator :: MessageTag -> Creator
+messageCreator = BS8.unpack . (!! 4) . split delimiter
 
 delimiter :: Word8
 delimiter = fromIntegral . ord $ ':'

@@ -8,7 +8,6 @@ module System.MQ.Scheduler.Internal.Logic
 
 import           Control.Concurrent                  (forkIO)
 import           Control.Monad                       (when)
-import           Data.ByteString                     (ByteString)
 import           Data.String                         (IsString (..))
 import           System.Log.Logger                   (infoM)
 import           System.MQ.Monad                     (MQMonad, foreverSafe,
@@ -36,32 +35,30 @@ runSchedulerLogic :: NetConfig -> LogicConfig -> IO ()
 runSchedulerLogic NetConfig{..} LogicConfig{..} = do
     infoM name "start working..."
     _ <- forkIO processingTech
-    processingCom allowList
+    processingCom
 
   where
-    allowList :: [ByteString]
-    allowList = fromString <$> allowMessages
 
     name :: String
     name = "SchedulerLogic"
 
-    processingCom :: [ByteString] -> IO ()
-    processingCom allowList' = runMQMonad $ do
+    processingCom :: IO ()
+    processingCom  = runMQMonad $ do
         context'         <- contextM
         fromInToLogic    <- connectTo (comHostPort schedulerInLogic) context'
         fromLogictoWorld <- connectTo (comHostPort schedulerLogicOut) context'
-        foreverSafe name $ comLogic allowList' fromInToLogic fromLogictoWorld
+        foreverSafe name $ comLogic allowMessages fromInToLogic fromLogictoWorld
 
     -- | Function with scheduler logic.
-    comLogic :: [ByteString] -> PullChannel -> PushChannel -> MQMonad ()
+    comLogic :: [String] -> PullChannel -> PushChannel -> MQMonad ()
     -- if list of allow messages is empty then send every message further
     --
     comLogic [] fromIn toOut = pull fromIn >>= push toOut
     -- else only messages with spec from @allowList@ are send further
     --
-    comLogic allowList' fromIn toOut = do
+    comLogic allowList fromIn toOut = do
         m@(tag, _) <- pull fromIn
-        if messageSpec tag `elem` allowList'
+        if messageSpec tag `elem` allowList
         then push toOut m
         else pure ()
 
