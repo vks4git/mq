@@ -49,7 +49,7 @@ class MessageLike a where
   unpackM :: BS.ByteString -> MQMonad a
   unpackM bs@(unpack -> m) = maybe (throwError err) pure m
     where
-      err = MQProtocolError . printf "could not unpack JSON: %s" . show $ bs
+      err = MQProtocolError . printf "could not unpack Message: %s" . show $ bs
 
 
 
