@@ -1,0 +1,34 @@
+{
+  "build":{
+    "deps":[]
+  },
+  "deploy":{
+      "monique":{
+          "scheduler-in" : {
+              "host": "*",
+              "comport": 9000,
+              "techport": 9024
+          },
+          "scheduler-in-logic" : {
+              "host": "scheduler-in",
+              "comport": 9010,
+              "techport": 9034
+          },
+          "scheduler-logic-out" : {
+              "host": "scheduler-out",
+              "comport": 9011,
+              "techport": 9035
+          },
+          "scheduler-out" : {
+              "host": "*",
+              "comport": 9001,
+              "techport": 9025
+          }
+    }
+  },
+    "params":{
+        "scheduler-logic": {
+            "allow-messages": [] 
+        }
+    }
+}
