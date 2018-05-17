@@ -1,4 +1,3 @@
-{-# LANGUAGE OverloadedStrings   #-}
 {-# LANGUAGE RecordWildCards     #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 {-# OPTIONS_GHC -fno-warn-orphans #-}
@@ -20,7 +19,7 @@ infix .=
 a .= b = (a, toObject b)
 
 infix .!
-(.!) :: (Monad m, MessagePack b) => Map ByteString Object -> ByteString -> m b
+(.!) :: (Monad m, MessagePack b) => Map String Object -> String -> m b
 dict .! key | key `member` dict = fromObject $ dict ! key
             | otherwise = error $ "System.MQ.Protocol.Internal.Instances: .! :: key " ++ show key ++ " is not an element of the dictionary."
 

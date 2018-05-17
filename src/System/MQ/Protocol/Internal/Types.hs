@@ -23,8 +23,8 @@ import           GHC.Generics                  (Generic (..))
 -- | Dictionary class describes objects that can be turned into an association list (key := value) Object
 --
 class Dictionary a where
-  toDictionary :: a -> Map ByteString Object
-  fromDictionary :: Monad m => Map ByteString Object -> m a
+  toDictionary :: a -> Map String Object
+  fromDictionary :: Monad m => Map String Object -> m a
 
 -- | Represents Unix epoch time in milliseconds.
 --

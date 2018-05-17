@@ -6,6 +6,14 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [0.1.2.0] - 2018-05-17
+### Changed
+- Key type in Message map changed from `ByteString` to `String`.
+
+## [0.1.1.0] - 2018-05-14
+### Changed
+- Working with tags
+
 ## [0.1.0.4] - 2018-05-11
 ### Changed
 - New error handling during execution of runMQMonad
