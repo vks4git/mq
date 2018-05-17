@@ -6,6 +6,14 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [0.1.2.1] - 2018-05-17
+### Changed
+- `String` is not so fast as `Text`.
+
+## [0.1.2.0] - 2018-05-17
+### Changed
+- Key type in Message map changed from `ByteString` to `String`.
+
 ## [0.1.2.0] - 2018-05-17
 ### Changed
 - Key type in Message map changed from `ByteString` to `String`.

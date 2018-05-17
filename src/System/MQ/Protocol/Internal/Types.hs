@@ -18,13 +18,14 @@ import           Data.ByteString               as BS (ByteString)
 import           Data.Map.Strict               (Map)
 import           Data.MessagePack              ()
 import           Data.MessagePack.Types.Object (Object)
+import           Data.Text                     (Text)
 import           GHC.Generics                  (Generic (..))
 
 -- | Dictionary class describes objects that can be turned into an association list (key := value) Object
 --
 class Dictionary a where
-  toDictionary :: a -> Map String Object
-  fromDictionary :: Monad m => Map String Object -> m a
+  toDictionary :: a -> Map Text Object
+  fromDictionary :: Monad m => Map Text Object -> m a
 
 -- | Represents Unix epoch time in milliseconds.
 --
