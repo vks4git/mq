@@ -10,12 +10,12 @@
               "techport": 9024
           },
           "scheduler-in-logic" : {
-              "host": "scheduler-in",
+              "host": "mq-scheduler-in",
               "comport": 9010,
               "techport": 9034
           },
           "scheduler-logic-out" : {
-              "host": "scheduler-out",
+              "host": "mq-scheduler-out",
               "comport": 9011,
               "techport": 9035
           },

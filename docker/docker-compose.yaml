@@ -1,6 +1,6 @@
 version: '3'
 services:
-  scheduler-in:
+  mq-scheduler-in:
     image: biocad/mq-scheduler-in
     restart: always
     ports:
@@ -9,7 +9,7 @@ services:
     volumes:
       - ${PWD}/config-compose.json:/workdir/config.json:ro
 
-  scheduler-out:
+  mq-scheduler-out:
     image: biocad/mq-scheduler-out
     restart: always
     ports:
@@ -18,11 +18,22 @@ services:
     volumes:
       - ${PWD}/config-compose.json:/workdir/config.json:ro
 
-  scheduler-logic:
+  mq-scheduler-logic:
     image: biocad/mq-scheduler-logic
     restart: always
     links:
-      - scheduler-in
-      - scheduler-out
+      - mq-scheduler-in
+      - mq-scheduler-out
     volumes:
       - ${PWD}/config-compose.json:/workdir/config.json:ro
+
+  mq-controller:
+    image: biocad/mq-controller
+    restart: always
+    links:
+      - mq-scheduler-in
+      - mq-scheduler-out
+    ports:
+      - "10000-10500:10000-10500"
+    volumes:
+      - ${PWD}/config-controller-compose.json:/workdir/config.json:ro
