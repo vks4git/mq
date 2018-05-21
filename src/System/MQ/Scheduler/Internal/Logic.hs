@@ -10,13 +10,13 @@ import           Control.Concurrent                  (forkIO)
 import           Control.Monad                       (when)
 import           Data.String                         (IsString (..))
 import           System.Log.Logger                   (infoM)
+import           System.MQ.Error                     (MQError (..), errorKilled)
 import           System.MQ.Monad                     (MQMonad, foreverSafe,
                                                       runMQMonad)
 import           System.MQ.Protocol                  (Message (..),
                                                       MessageLike (..),
                                                       Props (..), createMessage,
                                                       messageSpec)
-import           System.MQ.Protocol.Error            (MQErrorData (..))
 import           System.MQ.Protocol.Technical        (KillConfig (..))
 import           System.MQ.Scheduler.Internal.Config (LogicConfig (..),
                                                       NetConfig (..),
@@ -70,11 +70,11 @@ runSchedulerLogic NetConfig{..} LogicConfig{..} = do
         toSchedulerOut   <- connectTo (comHostPort schedulerLogicOut) context'
         foreverSafe name $ do
           (tag, msg) <- T.pull fromInToLogic
-          when (messageSpec tag == (fromString $ spec (props :: Props KillConfig))) $ processKillMsg toSchedulerOut msg
+          when (messageSpec tag == fromString (spec (props :: Props KillConfig))) $ processKillMsg toSchedulerOut msg
           T.push fromLogicToWorld msg
 
     processKillMsg :: PushChannel -> Message -> MQMonad ()
     processKillMsg toSchedulerOut Message{..} = do
         killId <- killTaskId <$> unpackM msgData
-        newMsg <- createMessage killId msgCreator msgExpiresAt (MQErrorData "Task killed.")
+        newMsg <- createMessage killId msgCreator msgExpiresAt (MQError errorKilled "task killed")
         T.push toSchedulerOut newMsg

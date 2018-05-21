@@ -1,5 +1,5 @@
 name:                mq
-version:             0.1.2.1
+version:             0.1.3.0
 synopsis:            Package with monique core
 description:
   The package covers:
@@ -33,7 +33,7 @@ library
                      , System.MQ.Protocol 
                      , System.MQ.Protocol.Technical
                      , System.MQ.Protocol.Class
-                     , System.MQ.Protocol.Error
+                     , System.MQ.Error
                      , System.MQ.Monad
                      , System.MQ.Encoding.MessagePack
                      , System.MQ.Encoding.JSON
@@ -42,6 +42,9 @@ library
                      , System.MQ.Protocol.Internal.Instances 
                      , System.MQ.Protocol.Internal.Tag 
                      , System.MQ.Protocol.Internal.Condition
+
+                     , System.MQ.Error.Internal.Types
+                     , System.MQ.Error.Internal.Instances
                      
                      , System.MQ.Scheduler.Internal.Config
                      , System.MQ.Scheduler.Internal.In

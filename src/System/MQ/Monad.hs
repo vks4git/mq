@@ -1,19 +1,20 @@
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
-{-# LANGUAGE RecordWildCards            #-}
 
 module System.MQ.Monad
   (
     MQMonad
-  , MQError (..)
   , runMQMonad
   , errorHandler
   , foreverSafe
   ) where
 
-import           Control.Monad.Except (ExceptT, MonadError, MonadIO, catchError,
-                                       forever, liftIO, runExceptT)
-import           System.Log.Logger    (errorM)
-import           Text.Printf          (printf)
+import           Control.Monad.Except           (ExceptT, MonadError, MonadIO,
+                                                 catchError, forever, liftIO,
+                                                 runExceptT)
+import           System.Log.Logger              (errorM)
+import           System.MQ.Error.Internal.Types (MQError (..))
+import           Text.Printf                    (printf)
+
 
 -- | 'MQMonad' is the base monad for the Monique System.
 --
@@ -32,13 +33,13 @@ runMQMonad :: MQMonad a -> IO a
 runMQMonad m = either renderError pure =<< runExceptT (unMQMonad m)
   where
     renderError :: MQError -> IO a
-    renderError ms = ms `seq` error (msg ms)
+    renderError mqError = error . show $! mqError
 
 -- | 'errorHandler' logs message with error @err@ for the component with name @name@
 --
-errorHandler :: (Show e) => String -> e -> MQMonad ()
-errorHandler name err = do
-  liftIO . errorM name . show $! err
+errorHandler :: String -> MQError -> MQMonad ()
+errorHandler name (MQError c m) = do
+  liftIO . errorM name $! printf "MQError (code %d): %s" c m
   pure ()
 
 -- | 'foreverSafe' runs given @MQMonad ()@ forever.
@@ -46,18 +47,3 @@ errorHandler name err = do
 --
 foreverSafe :: String -> MQMonad () -> MQMonad ()
 foreverSafe name = forever . (`catchError` errorHandler name)
-
--- | 'MQError' is class for MoniQue Errors.
---
-data MQError
-  = MQProtocolError  { msg :: String }
-  | MQTransportError { msg :: String }
-  | MQTechnicalError { msg :: String }
-  | MQComponentError { msg :: String }
-  deriving (Eq, Ord)
-
-instance Show MQError where
-  show MQProtocolError{..}  = printf "MoniQue protocol error: %s" msg
-  show MQTransportError{..} = printf "Monique transport error: %s" msg
-  show MQTechnicalError{..} = printf "MoniQue technical error: %s" msg
-  show MQComponentError{..} = printf "MoniQue component runtime error: %s" msg

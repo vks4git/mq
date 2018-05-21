@@ -17,6 +17,10 @@ import           System.MQ.Protocol.Internal.Types (Creator, Dictionary (..),
                                                     MessageType (..), Spec,
                                                     Timestamp)
 
+--------------------------------------------------------------------------------
+-- Convertation for Message to and from MessagePack
+--------------------------------------------------------------------------------
+
 infix .=
 (.=) :: (Ord a, MessagePack b) => a -> b -> (a, Object)
 a .= b = (a, toObject b)
@@ -56,4 +60,3 @@ instance MessagePack Message where
 instance MessagePack MessageType where
   toObject = toObject . show
   fromObject = fmap read . fromObject
-

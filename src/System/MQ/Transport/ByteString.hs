@@ -14,7 +14,8 @@ import qualified Data.ByteString                    as BS (ByteString, split)
 import           Data.List.NonEmpty                 (NonEmpty (..))
 import           Data.Maybe                         (fromJust, isJust)
 import qualified System.MQ.Encoding.MessagePack     as MP (unpack)
-import           System.MQ.Monad                    (MQError (..), MQMonad)
+import           System.MQ.Monad                    (MQMonad)
+import           System.MQ.Error                    (MQError (..), errorTag, errorTransport)
 import           System.MQ.Protocol                 (delimiter)
 import           System.MQ.Transport.Internal.Types (PubChannel, PullChannel,
                                                      PushChannel, SubChannel)
@@ -48,8 +49,8 @@ sub channel = do
 processMessage :: [BS.ByteString] -> MQMonad (BS.ByteString, BS.ByteString)
 processMessage [msgTag, msgContent] = if tagIsValid msgTag
                                       then pure (msgTag, msgContent)
-                                      else throwError . MQTransportError $ "tag is not valid."
-processMessage list = throwError . MQTransportError . printf "expected message with [header, body]; received list with %d element(s)." $ length list
+                                      else throwError . MQError errorTag $ "tag is not valid."
+processMessage list = throwError . MQError errorTransport . printf "expected message with [header, body]; received list with %d element(s)." $ length list
 
 tagIsValid :: BS.ByteString -> Bool
 tagIsValid bs = isMessagePack && length delimited == 5 && head delimited `elem` msgTypes

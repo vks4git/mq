@@ -6,6 +6,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [0.1.3.0] - 2018-05-18
+### Changed
+- Error message has codes now.
+- Conroller host moved to deploy section for the component config.json.
+
 ## [0.1.2.1] - 2018-05-17
 ### Changed
 - `String` is not so fast as `Text`.

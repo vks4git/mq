@@ -7,12 +7,14 @@ module System.MQ.Encoding.JSON
   , unpackM
   ) where
 
-import           Control.Monad.Except (throwError)
-import           Data.Aeson           (FromJSON, ToJSON, decode, encode)
-import qualified Data.ByteString      as BS (ByteString)
-import qualified Data.ByteString.Lazy as BSL (fromStrict, toStrict)
-import           System.MQ.Monad      (MQError (..), MQMonad)
-import           Text.Printf          (printf)
+import           Control.Monad.Except           (throwError)
+import           Data.Aeson                     (FromJSON, ToJSON, decode,
+                                                 encode)
+import qualified Data.ByteString                as BS (ByteString)
+import qualified Data.ByteString.Lazy           as BSL (fromStrict, toStrict)
+import           System.MQ.Error.Internal.Types (MQError (..), errorEncoding)
+import           System.MQ.Monad                (MQMonad)
+import           Text.Printf                    (printf)
 
 -- | Packs something from JSON to 'BS.ByteString'.
 --
@@ -31,4 +33,4 @@ unpack = decode . BSL.fromStrict
 unpackM :: FromJSON a => BS.ByteString -> MQMonad a
 unpackM bs@(unpack -> m) = maybe (throwError err) pure m
   where
-    err = MQProtocolError . printf "could not unpack JSON: %s" . show $ bs
+    err = MQError errorEncoding . printf "could not unpack JSON: %s" . show $ bs

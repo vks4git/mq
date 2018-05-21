@@ -25,7 +25,8 @@ import           Data.ByteString.Base64            as Base64 (encode)
 import           Data.String                       (IsString (..))
 import           System.Clock                      (Clock (..), getTime,
                                                     toNanoSecs)
-import           System.MQ.Monad                   (MQError (..), MQMonad)
+import           System.MQ.Error.Internal.Types    (MQError (..), errorEncoding)
+import           System.MQ.Monad                   (MQMonad)
 import           System.MQ.Protocol.Class          (MessageLike (..),
                                                     Props (..))
 import           System.MQ.Protocol.Internal.Types (Creator, Encoding, Hash,
@@ -79,7 +80,7 @@ createMessageBS mPid mCreator mExpires spec' encoding' mtype' mData = do
     (mId, mCreated) <- mkId mCreator spec'
     pure $ Message mId mPid mCreator mCreated mExpires spec' encoding' mtype' mData
   where
-    encodingEr = MQProtocolError "unknown encoding"
+    encodingEr = MQError errorEncoding "unknown encoding"
 
 -- | Get current time in milliseconds.
 --
