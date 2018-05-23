@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [0.1.3.1] - 2018-05-23
+### Changed
+- closeM and terminateM functions added for destruction of Context
+
 ## [0.1.3.0] - 2018-05-18
 ### Changed
 - Error message has codes now.

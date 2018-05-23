@@ -10,17 +10,18 @@ module System.MQ.Transport.Internal.Types
   , ConnectTo (..)
   , BindTo (..)
   , System.ZMQ4.Context
-  , System.ZMQ4.context
-  , contextM
   , anyHost
+  , closeM
+  , contextM
   , localHost
   , showTCP
+  , terminateM
   ) where
 
 import           Control.Monad.IO.Class (liftIO)
 import           System.MQ.Monad        (MQMonad)
 import           System.ZMQ4            (Context, Pub, Pull, Push, Socket, Sub,
-                                         context)
+                                         close, context, term)
 import           Text.Printf            (printf)
 
 -- | Alias for host
@@ -82,3 +83,11 @@ showTCP = printf "tcp://%s:%d"
 --
 contextM :: MQMonad Context
 contextM = liftIO context
+
+closeM :: Socket a -> MQMonad ()
+closeM = liftIO . close
+
+-- | Terminates given context in 'MQMonad'.
+--
+terminateM :: Context -> MQMonad ()
+terminateM = liftIO . term
