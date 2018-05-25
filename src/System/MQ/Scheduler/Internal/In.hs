@@ -7,7 +7,8 @@ module System.MQ.Scheduler.Internal.In
 
 import           Control.Concurrent                  (forkIO)
 import           System.Log.Logger                   (infoM)
-import           System.MQ.Monad                     (foreverSafe, runMQMonad)
+import           System.MQ.Monad                     (foreverSafe,
+                                                      runMQMonad)
 import           System.MQ.Scheduler.Internal.Config (NetConfig (..),
                                                       SchedulerCfg, comHostPort,
                                                       techHostPort)

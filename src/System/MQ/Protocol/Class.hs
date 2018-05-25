@@ -9,7 +9,7 @@ module System.MQ.Protocol.Class
 import           Control.Monad.Except              (throwError)
 import qualified Data.ByteString                   as BS (ByteString)
 import           System.MQ.Error.Internal.Types    (MQError (..), errorEncoding)
-import           System.MQ.Monad                   (MQMonad)
+import           System.MQ.Monad                   (MQMonadS)
 import           System.MQ.Protocol.Internal.Types (Encoding, MessageType, Spec)
 import           Text.Printf                       (printf)
 
@@ -46,7 +46,7 @@ class MessageLike a where
   -- | Unpacks something from 'BS.ByteString' inside 'MQMonad'.
   -- If 'unpackM' failes then 'MQError' will be thrown.
   --
-  unpackM :: BS.ByteString -> MQMonad a
+  unpackM :: BS.ByteString -> MQMonadS s a
   unpackM bs@(unpack -> m) = maybe (throwError err) pure m
     where
       err = MQError errorEncoding . printf "could not unpack sessage: %s" . show $ bs

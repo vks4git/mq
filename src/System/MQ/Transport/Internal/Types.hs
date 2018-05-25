@@ -18,8 +18,8 @@ module System.MQ.Transport.Internal.Types
   , terminateM
   ) where
 
-import           Control.Monad.IO.Class (liftIO)
-import           System.MQ.Monad        (MQMonad)
+import           Control.Monad.IO.Class (MonadIO, liftIO)
+import           System.MQ.Monad        (MQMonadS)
 import           System.ZMQ4            (Context, Pub, Pull, Push, Socket, Sub,
                                          close, context, term)
 import           Text.Printf            (printf)
@@ -57,12 +57,12 @@ type SubChannel  = Socket Sub
 -- | Class for connecting to the given 'HostPort'.
 --
 class ConnectTo a where
-  connectTo :: HostPort -> Context -> MQMonad a
+  connectTo :: MonadIO m => HostPort -> Context -> m a
 
 -- | Class for bind to the given 'HostPort'.
 --
 class BindTo a where
-  bindTo :: HostPort -> Context -> MQMonad a
+  bindTo :: MonadIO m => HostPort -> Context -> m a
 
 -- | Sometimes wildcald host is needed for connections
 --
@@ -81,13 +81,13 @@ showTCP = printf "tcp://%s:%d"
 
 -- | Returns 'Context' in 'MQMMonad' inspite of 'IO' monad.
 --
-contextM :: MQMonad Context
+contextM :: MonadIO m => m Context
 contextM = liftIO context
 
-closeM :: Socket a -> MQMonad ()
+closeM :: Socket a -> MQMonadS s ()
 closeM = liftIO . close
 
 -- | Terminates given context in 'MQMonad'.
 --
-terminateM :: Context -> MQMonad ()
+terminateM :: Context -> MQMonadS s ()
 terminateM = liftIO . term
