@@ -9,9 +9,13 @@ mkdir mq
 cd mq
 wget https://raw.githubusercontent.com/biocad/mq/master/docker/docker-compose.yaml
 wget https://raw.githubusercontent.com/biocad/mq/master/docker/config-compose.json
+wget https://raw.githubusercontent.com/biocad/mq/master/docker/config-controller-compose.json
 ```
 
-2. Запустить "одно место" с помощью инструмента [Docker](https://www.docker.com/):
+2. Проверить конфигурационные файлы. 
+Если компонент должен запускаться с помощью [контроллера](Controller.md), то добавить необходимые поля в файл `config-controller-compose.json`, поле `connections`.
+
+3. Запустить все необходимые компоненты с помощью инструмента [Docker](https://www.docker.com/):
 
 ```
 docker-compose up -d
