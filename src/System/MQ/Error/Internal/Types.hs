@@ -1,4 +1,5 @@
 {-# LANGUAGE DeriveGeneric #-}
+{-# LANGUAGE InstanceSigs  #-}
 
 module System.MQ.Error.Internal.Types
   ( MQError (..)
@@ -13,9 +14,10 @@ module System.MQ.Error.Internal.Types
   , errorIncorrectInput
   ) where
 
-import           Control.Exception (Exception)
 import           GHC.Generics      (Generic)
+import           Control.Exception (Exception (..), SomeException (..), toException)
 import           Text.Printf       (printf)
+
 
 -- | MQError represents:
 --   * data for the message with type @error@: for more details see file System.MQ.Error.Internal.Instances;
@@ -26,10 +28,24 @@ data MQError = MQError { errorCode    :: Int
                        }
   deriving (Eq, Generic)
 
+instance Exception MQError where
+  toException :: MQError -> SomeException
+  toException = SomeException
+
+  fromException :: SomeException -> Maybe MQError
+  fromException (SomeException e) = res
+    where
+      msg = show e
+      codeStartIdx = 14
+      (err, code) = splitAt codeStartIdx msg
+      res = if err == "MQError (code "
+              then Just $ MQError (read (take 3 code) :: Int) msg
+              else Nothing
+
+
 instance Show MQError where
   show (MQError c m) = printf "MQError (code %d): %s" c m
 
-instance Exception MQError
 
 --------------------------------------------------------------------------------
 -- PROTOCOL ERROR: 1xx

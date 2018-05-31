@@ -1,15 +1,15 @@
 name:                mq
-version:             0.1.4.0
+version:             0.1.5.0
 synopsis:            Package with monique core
 description:
   The package covers:
   .
-    * monique monad module                    
+    * monique monad module
   .
     * protocol module
   .
     * transport module
-  .                  
+  .
     * scheduler module
   .
     * encoding module
@@ -30,22 +30,22 @@ library
   exposed-modules:     System.MQ.Transport
                      , System.MQ.Transport.ByteString
                      , System.MQ.Scheduler
-                     , System.MQ.Protocol 
+                     , System.MQ.Protocol
                      , System.MQ.Protocol.Technical
                      , System.MQ.Protocol.Class
                      , System.MQ.Error
                      , System.MQ.Monad
                      , System.MQ.Encoding.MessagePack
                      , System.MQ.Encoding.JSON
-  other-modules:       System.MQ.Protocol.Internal.Types 
+  other-modules:       System.MQ.Protocol.Internal.Types
                      , System.MQ.Protocol.Internal.Functions
-                     , System.MQ.Protocol.Internal.Instances 
-                     , System.MQ.Protocol.Internal.Tag 
+                     , System.MQ.Protocol.Internal.Instances
+                     , System.MQ.Protocol.Internal.Tag
                      , System.MQ.Protocol.Internal.Condition
 
                      , System.MQ.Error.Internal.Types
                      , System.MQ.Error.Internal.Instances
-                     
+
                      , System.MQ.Scheduler.Internal.Config
                      , System.MQ.Scheduler.Internal.In
                      , System.MQ.Scheduler.Internal.Logic
@@ -97,7 +97,7 @@ executable scheduler-out
                      , mq
   default-language:    Haskell2010
   ghc-options:         -threaded -rtsopts -with-rtsopts=-N -Wall -O2
-  
+
 
 source-repository head
   type:     git

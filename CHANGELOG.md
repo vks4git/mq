@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [0.1.5.0] - 2018-05-29
+### Changed
+- Conversion of Exceptions into MQErrors, MQError packed into SomeException
+
 ## [0.1.4.0] - 2018-05-24
 ### Added
 - `MonadState` into `MQMonad`. Now it is `MQMonadS s a`.
