@@ -9,28 +9,25 @@ module System.MQ.Protocol.Technical
   ) where
 
 import           Data.Aeson               (FromJSON (..), ToJSON (..),
-                                           genericParseJSON, genericToJSON,
-                                           object, withObject, (.:), (.=))
+                                           genericParseJSON, genericToJSON)
 import           Data.Aeson.Casing        (aesonPrefix, snakeCase)
-import qualified Data.ByteString.Char8    as BSLC8 (pack, unpack)
 import           GHC.Generics             (Generic)
 import           System.MQ.Encoding.JSON  as JSON (pack, unpack)
-import           System.MQ.Protocol       (Hash, MessageType (..), Timestamp,
+import           System.MQ.Protocol       (Id, MessageType (..), Timestamp,
                                            jsonEncoding)
 import           System.MQ.Protocol.Class (MessageLike (..), Props (..))
 
 -- | Configuration for kill task
 --
-newtype KillConfig = KillConfig { killTaskId :: Hash
+newtype KillConfig = KillConfig { killTaskId :: Id
                                 }
   deriving (Eq, Show, Generic)
 
 instance ToJSON KillConfig where
-  toJSON p = object [ "task_id" .= BSLC8.unpack (killTaskId p)
-                    ]
+  toJSON = genericToJSON $ aesonPrefix snakeCase
 
 instance FromJSON KillConfig where
-  parseJSON = withObject "Kill Config" $ \o -> KillConfig . BSLC8.pack <$> o .: "task_id"
+  parseJSON = genericParseJSON $ aesonPrefix snakeCase
 
 instance MessageLike KillConfig where
   props = Props "kill" Config jsonEncoding

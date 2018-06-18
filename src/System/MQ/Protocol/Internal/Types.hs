@@ -4,7 +4,7 @@
 module System.MQ.Protocol.Internal.Types
   (
     Timestamp
-  , Hash
+  , Id
   , Creator
   , Encoding
   , Spec
@@ -31,32 +31,32 @@ class Dictionary a where
 --
 type Timestamp  = Int
 
--- | Represents SHA-1 hash sum.
+-- | Type for identificators
 --
-type Hash       = ByteString
+type Id         = Text
 
 -- | Message tag is a 'ByteString' with five separated with ':' fields: message type; spec; id; pid; creator.
 -- It can be created from 'Message' automatically.
 -- See doc/PROTOCOL.md for more details.
 --
-type MessageTag = ByteString
+type MessageTag = Text
 
 -- | Creator is identifier for user or system id that creates message.
 --
-type Creator    = String
+type Creator    = Text
 
 -- | Encoding is message encoding type. For this moment it can be "JSON" or "MessagePack".
 --
-type Encoding   = String
+type Encoding   = Text
 
 -- | Spec is message specification.
 --
-type Spec       = String
+type Spec       = Text
 
 -- | 'Message' is the main entity in MQ: various components, controllers and the Scheduler communicate with each other using 'Message's.
 --
-data Message = Message { msgId        :: Hash        -- ^ bin format family
-                       , msgPid       :: Hash        -- ^ bin format family
+data Message = Message { msgId        :: Id          -- ^ str format family
+                       , msgPid       :: Id          -- ^ str format family
                        , msgCreator   :: Creator     -- ^ str format family
                        , msgCreatedAt :: Timestamp   -- ^ int format family
                        , msgExpiresAt :: Timestamp   -- ^ int format family

@@ -1,5 +1,5 @@
 name:                mq
-version:             0.1.5.0
+version:             0.2.0.0
 synopsis:            Package with monique core
 description:
   The package covers:
@@ -57,16 +57,15 @@ library
                      , aeson
                      , aeson-casing
                      , aeson-picker
-                     , base64-bytestring
                      , bcd-config
                      , bytestring
                      , clock
                      , containers
-                     , cryptohash-sha1
                      , data-msgpack
                      , data-msgpack-types
                      , hslogger
                      , mtl
+                     , random
                      , semigroups
                      , split
                      , text

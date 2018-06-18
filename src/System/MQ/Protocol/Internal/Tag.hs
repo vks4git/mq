@@ -1,4 +1,5 @@
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE RecordWildCards   #-}
 
 module System.MQ.Protocol.Internal.Tag
   (
@@ -11,12 +12,9 @@ module System.MQ.Protocol.Internal.Tag
   , delimiter
   ) where
 
-import           Data.ByteString                   (intercalate, split)
-import           Data.ByteString.Char8             as BS8 (unpack)
-import           Data.Char                         (ord)
-import           Data.String                       (IsString (..))
-import           Data.Word                         (Word8)
-import           System.MQ.Protocol.Internal.Types (Creator, Hash, Message (..),
+import           Data.Text                         as T (intercalate, pack,
+                                                         split, unpack)
+import           System.MQ.Protocol.Internal.Types (Creator, Id, Message (..),
                                                     MessageTag,
                                                     MessageType (..), Spec)
 
@@ -26,7 +24,7 @@ import           System.MQ.Protocol.Internal.Types (Creator, Hash, Message (..),
 -- See doc/PROTOCOL.md#Заголовок-сообщения for more information.
 --
 messageTag :: Message -> MessageTag
-messageTag = intercalate ":" . ([fromString . show . msgType, fromString . msgSpec, msgId, msgPid, fromString . msgCreator] <*>) . pure
+messageTag Message{..} = T.intercalate ":" [T.pack . show $ msgType, msgSpec, msgId, msgPid, msgCreator]
 
 -- | Filtration:
 -- Use System.MQ.Protocol.Internal.Condition
@@ -36,19 +34,22 @@ messageTag = intercalate ":" . ([fromString . show . msgType, fromString . msgSp
 -- > False
 
 messageType :: MessageTag -> MessageType
-messageType = read . BS8.unpack . head . split delimiter
+messageType = read . T.unpack . head . T.split isDelimiter
 
 messageSpec :: MessageTag -> Spec
-messageSpec = BS8.unpack . (!! 1) . split delimiter
+messageSpec = (!! 1) . T.split isDelimiter
 
-messageId :: MessageTag -> Hash
-messageId = (!! 2) . split delimiter
+messageId :: MessageTag -> Id
+messageId = (!! 2) . T.split isDelimiter
 
-messagePid :: MessageTag -> Hash
-messagePid = (!! 3) . split delimiter
+messagePid :: MessageTag -> Id
+messagePid = (!! 3) . T.split isDelimiter
 
 messageCreator :: MessageTag -> Creator
-messageCreator = BS8.unpack . (!! 4) . split delimiter
+messageCreator = (!! 4) . T.split isDelimiter
 
-delimiter :: Word8
-delimiter = fromIntegral . ord $ ':'
+delimiter :: Char
+delimiter = ':'
+
+isDelimiter :: Char -> Bool
+isDelimiter = (== delimiter)

@@ -21,32 +21,28 @@ import           System.MQ.Transport.Internal.Types
 -- @tag::'MessageTag'@ is generated automatically from @content@.
 --
 push :: PushChannel -> Message -> MQMonadS s ()
-push channel content = let tag' = pack . messageTag $ content
-                       in TBS.push channel (tag', pack content)
+push channel content = TBS.push channel (messageTag content, pack content)
 
 -- | Pulls @(tag, content)@ from the 'PullChannel'.
 --
 pull :: PullChannel -> MQMonadS s (MessageTag, Message)
 pull channel = do
   (tag, content) <- TBS.pull channel
-  utag           <- unpackM tag
   ucontent       <- unpackM content
-  pure (utag, ucontent)
+  pure (tag, ucontent)
 
 -- | Publishes @(tag, content)@ to the 'PubChannel'.
 -- @tag::'MessageTag'@ is generated automatically from @content@.
 --
 pub :: PubChannel -> Message -> MQMonadS s ()
-pub channel content = let tag' = pack . messageTag $ content
-                      in TBS.pub channel (tag', pack content)
+pub channel content = TBS.pub channel (messageTag content, pack content)
 
 -- | Subscribes and gets @(tag, content)@ from the 'SubChannel'.
 --
 sub :: SubChannel -> MQMonadS s (MessageTag, Message)
 sub channel = do
   (tag, content) <- TBS.sub channel
-  utag           <- unpackM tag
   ucontent       <- unpackM content
-  pure (utag, ucontent)
+  pure (tag, ucontent)
 
 

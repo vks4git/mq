@@ -12,7 +12,7 @@ import           Data.MessagePack.Types.Class      (MessagePack (..))
 import           Data.MessagePack.Types.Object     (Object)
 import           Data.Text                         (Text)
 import           System.MQ.Protocol.Internal.Types (Creator, Dictionary (..),
-                                                    Encoding, Hash,
+                                                    Encoding, Id,
                                                     Message (..),
                                                     MessageType (..), Spec,
                                                     Timestamp)
@@ -42,8 +42,8 @@ instance Dictionary Message where
                                       , "data"       .= msgData
                                       ]
   fromDictionary dict = do
-    (msgId :: Hash)             <- dict .! "id"
-    (msgPid :: Hash)            <- dict .! "pid"
+    (msgId :: Id)               <- dict .! "id"
+    (msgPid :: Id)              <- dict .! "pid"
     (msgCreator :: Creator)     <- dict .! "creator"
     (msgCreatedAt :: Timestamp) <- dict .! "created_at"
     (msgExpiresAt :: Timestamp) <- dict .! "expires_at"
