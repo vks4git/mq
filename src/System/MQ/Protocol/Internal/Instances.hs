@@ -37,9 +37,10 @@ instance Dictionary Message where
                                       , "created_at" .= msgCreatedAt
                                       , "expires_at" .= msgExpiresAt
                                       , "spec"       .= msgSpec
-                                      , "encoding"   .= msgEncoding
                                       , "type"       .= show msgType
                                       , "data"       .= msgData
+                                      , "encrypted"  .= msgEncrypted
+                                      , "signature"  .= msgSignature
                                       ]
   fromDictionary dict = do
     (msgId :: Id)               <- dict .! "id"
@@ -48,9 +49,10 @@ instance Dictionary Message where
     (msgCreatedAt :: Timestamp) <- dict .! "created_at"
     (msgExpiresAt :: Timestamp) <- dict .! "expires_at"
     (msgSpec :: Spec)           <- dict .! "spec"
-    (msgEncoding :: Encoding)   <- dict .! "encoding"
     (msgType :: MessageType)    <- dict .! "type"
     (msgData :: ByteString)     <- dict .! "data"
+    (msgEncrypted :: Encrypted) <- dict .! "encrypted"
+    (msgSignature :: Signature) <- dict .! "sinature"
     pure Message{..}
 
 instance MessagePack Message where

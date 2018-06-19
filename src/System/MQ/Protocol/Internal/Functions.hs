@@ -41,16 +41,6 @@ emptyId = ""
 notExpires :: Timestamp
 notExpires = 0
 
--- | Alias for JSON encoding.
---
-jsonEncoding :: Encoding
-jsonEncoding = "JSON"
-
--- | Alias for MessagePack encoding.
---
-msgpackEncoding :: Encoding
-msgpackEncoding = "MessagePack"
-
 -- | Creates new message.
 --
 createMessage :: forall a s. MessageLike a
@@ -71,10 +61,9 @@ createMessageBS :: Id            -- ^ parent message id
                 -> Spec          -- ^ spec of message
                 -> Encoding      -- ^ encoding of data
                 -> MessageType   -- ^ type of data
-                -> ByteString -- ^ message data
+                -> ByteString    -- ^ message data
                 -> MQMonadS s Message
 createMessageBS mPid mCreator mExpires spec' encoding' mtype' mData = do
-    when (encoding' /= jsonEncoding && encoding' /= msgpackEncoding) $ throwError encodingEr
     (mId, mCreated) <- mkId
     pure $ Message mId mPid mCreator mCreated mExpires spec' encoding' mtype' mData
   where

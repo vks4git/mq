@@ -10,6 +10,7 @@ module System.MQ.Protocol.Internal.Tag
   , messagePid
   , messageCreator
   , delimiter
+  , isDelimiter
   ) where
 
 import           Data.Text                         as T (intercalate, pack,

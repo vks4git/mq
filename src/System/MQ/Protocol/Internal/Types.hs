@@ -6,8 +6,9 @@ module System.MQ.Protocol.Internal.Types
     Timestamp
   , Id
   , Creator
-  , Encoding
   , Spec
+  , Encrypted
+  , Signature
   , MessageTag
   , Message (..)
   , MessageType (..)
@@ -45,13 +46,13 @@ type MessageTag = Text
 --
 type Creator    = Text
 
--- | Encoding is message encoding type. For this moment it can be "JSON" or "MessagePack".
---
-type Encoding   = Text
-
 -- | Spec is message specification.
 --
 type Spec       = Text
+
+type Encrypted  = Bool
+
+type Signature  = ByteString
 
 -- | 'Message' is the main entity in MQ: various components, controllers and the Scheduler communicate with each other using 'Message's.
 --
@@ -61,9 +62,10 @@ data Message = Message { msgId        :: Id          -- ^ str format family
                        , msgCreatedAt :: Timestamp   -- ^ int format family
                        , msgExpiresAt :: Timestamp   -- ^ int format family
                        , msgSpec      :: Spec        -- ^ str format family
-                       , msgEncoding  :: Encoding    -- ^ str format family
                        , msgType      :: MessageType -- ^ str format family
                        , msgData      :: ByteString  -- ^ bin format family
+                       , msgEncrypted :: Encrypted   -- ^ bool format family
+                       , msgSignature :: Signature   -- ^ bin format family
                        }
   deriving (Eq, Show, Read, Generic)
 
