@@ -61,6 +61,7 @@ library
                      , bytestring
                      , clock
                      , containers
+                     , cryptohash
                      , data-msgpack
                      , data-msgpack-types
                      , hslogger
