@@ -16,19 +16,20 @@ module System.MQ.Protocol.Internal.Functions
   , getTimeMillis
   ) where
 
-import           Control.Monad                     (replicateM, when)
+import           Control.Monad                     (replicateM)
 import           Control.Monad.Except              (throwError)
 import           Control.Monad.IO.Class            (MonadIO, liftIO)
 import           Data.ByteString                   (ByteString)
-import           Data.Text                         as T (Text, append, pack)
+import           Data.Text                         as T (pack)
 import           System.Clock                      (Clock (..), getTime,
                                                     toNanoSecs)
-import           System.MQ.Error.Internal.Types    (MQError (..), errorEncoding)
+import           System.MQ.Error.Internal.Types    (MQError (..), errorProtocol)
 import           System.MQ.Monad                   (MQMonadS)
 import           System.MQ.Protocol.Class          as MQClass (MessageLike (..),
                                                                Props (..))
-import           System.MQ.Protocol.Internal.Types (Creator, Id,Encrypted,Signature,
+import           System.MQ.Protocol.Internal.Types (Creator, Encrypted, Id,
                                                     Message (..), MessageType,
+                                                    Secure (..), Signature,
                                                     Spec, Timestamp)
 import           System.Random                     (getStdRandom, randomR)
 
@@ -63,13 +64,12 @@ createMessage :: forall a s. MessageLike a
               => Id        -- ^ parent message id
               -> Creator   -- ^ creator id
               -> Timestamp -- ^ expiration time
-              -> Encrypted -- ^ encryption flag
-              -> Signature -- ^ signature
+              -> Secure    -- ^ how to protect message
               -> a         -- ^ message data
               -> MQMonadS s Message
-createMessage mPid mCreator mExpires mEncrypted mSign (MQClass.pack -> mData) = do
+createMessage mPid mCreator mExpires secure (MQClass.pack -> mData) = do
     let Props{..}   = props :: Props a
-    createMessageBS mPid mCreator mExpires spec mtype mEncrypted mSign mData
+    createMessageBS mPid mCreator mExpires spec mtype secure mData
 
 -- | Creates new message using already encoded data.
 --
@@ -78,16 +78,15 @@ createMessageBS :: Id          -- ^ parent message id
                 -> Timestamp   -- ^ message expiration time
                 -> Spec        -- ^ spec of message
                 -> MessageType -- ^ type of data
-                -> Encrypted   -- ^ encryption flag
-                -> Signature   -- ^ signature
+                -> Secure      -- ^ how to protect message
                 -> ByteString  -- ^ message data
                 -> MQMonadS s Message
-createMessageBS mPid mCreator mExpires spec' mtype' enc' sign' mData = do
+createMessageBS mPid mCreator mExpires spec' mtype' NotSecured mData = do
     mCreated <- getTimeMillis
     mId <- mkId
-    pure $ Message mId mPid mCreator mCreated mExpires spec' mtype' mData enc' sign'
-  where
-    encodingEr = MQError errorEncoding "unknown encoding"
+    pure $ Message mId mPid mCreator mCreated mExpires spec' mtype' mData notEncrypted emptySignature
+createMessageBS _ _ _ _ _ _ _ = throwError $ MQError errorProtocol "now supports only not secure messages"
+
 
 -- | Get current time in milliseconds.
 --

@@ -12,7 +12,7 @@ import           System.Log.Logger                   (infoM)
 import           System.MQ.Error                     (MQError (..), errorKilled)
 import           System.MQ.Monad                     (MQMonad, foreverSafe,
                                                       runMQMonad)
-import           System.MQ.Protocol                  (Message (..),
+import           System.MQ.Protocol                  (Message (..), Secure (..),
                                                       MessageLike (..),
                                                       Props (..), createMessage,
                                                       messageSpec)
@@ -75,5 +75,5 @@ runSchedulerLogic NetConfig{..} LogicConfig{..} = do
     processKillMsg :: PushChannel -> Message -> MQMonad ()
     processKillMsg toSchedulerOut Message{..} = do
         killId <- killTaskId <$> unpackM msgData
-        newMsg <- createMessage killId msgCreator msgExpiresAt msgEncrypted msgSignature (MQError errorKilled "task killed")
+        newMsg <- createMessage killId msgCreator msgExpiresAt NotSecured (MQError errorKilled "task killed")
         T.push toSchedulerOut newMsg

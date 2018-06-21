@@ -9,7 +9,7 @@ module System.MQ.Transport.ByteString
   ) where
 
 import           Control.Monad.Except
-import qualified Data.ByteString                    as BS (ByteString, unpack)
+import qualified Data.ByteString                    as BS (ByteString)
 import           Data.List.NonEmpty                 (NonEmpty (..))
 import           Data.Maybe                         (fromJust, isJust)
 import           Data.Text                          as T (Text, split)
@@ -49,8 +49,6 @@ sub channel = do
 
 processMessage :: [BS.ByteString] -> MQMonadS s (MessageTag, BS.ByteString)
 processMessage [msgTag, msgContent] = do
-  liftIO $ print $ BS.unpack msgTag
-  liftIO $ print $ BS.unpack msgContent 
   either throwError (\tag -> pure (tag, msgContent)) $ checkTag msgTag
                                      -- if tagIsValid msgTag
                                       -- then pure (msgTag, msgContent)

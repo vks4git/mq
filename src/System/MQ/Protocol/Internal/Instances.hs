@@ -42,7 +42,7 @@ instance Dictionary Message where
     (msgType :: MessageType)    <- dict .! "type"
     (msgData :: ByteString)     <- dict .! "data"
     (msgEncrypted :: Encrypted) <- dict .! "encrypted"
-    (msgSignature :: Signature) <- dict .! "sinature"
+    (msgSignature :: Signature) <- dict .! "signature"
     pure Message{..}
 
 instance MessagePack Message where

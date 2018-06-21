@@ -21,8 +21,14 @@ import           System.MQ.Protocol.Internal.Types (Creator, Id, Message (..),
 
 
 -- | Build a 'MessageTag' for the given message.
--- It is consists of five fields – message_type, spec, id, pid, creator – separated by ":".
--- See doc/PROTOCOL.md#Заголовок-сообщения for more information.
+-- It is consists of five fields with fixed order:
+--   * message_type
+--   * spec
+--   * id
+--   * pid
+--   * creator
+-- that separated by ":".
+-- See doc/PROTOCOL.md#Заголовок-сообщения for more information
 --
 messageTag :: Message -> MessageTag
 messageTag Message{..} = T.intercalate ":" [T.pack . show $ msgType, msgSpec, msgId, msgPid, msgCreator]

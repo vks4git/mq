@@ -13,6 +13,7 @@ module System.MQ.Protocol.Internal.Types
   , Message (..)
   , MessageType (..)
   , Dictionary (..)
+  , Secure (..)
   ) where
 
 import           Data.ByteString               as BS (ByteString)
@@ -28,46 +29,35 @@ class Dictionary a where
   toDictionary :: a -> Map Text Object
   fromDictionary :: Monad m => Map Text Object -> m a
 
--- | Represents Unix epoch time in milliseconds.
+-- | 'Timestamp' represents Unix epoch time in milliseconds
 --
 type Timestamp  = Int
 
--- | Type for identificators
+-- | 'Id' represent identificator for the message
 --
 type Id         = Text
 
--- | Message tag is a 'ByteString' with five separated with ':' fields: message type; spec; id; pid; creator.
+-- | 'MessageTag' is a 'Text' with five separated with ':' fields: message type; spec; id; pid; creator.
 -- It can be created from 'Message' automatically.
--- See doc/PROTOCOL.md for more details.
+-- See doc/PROTOCOL.md for more details
 --
 type MessageTag = Text
 
--- | Creator is identifier for user or system id that creates message.
+-- | 'Creator' is identifier for user or system that creates message
 --
 type Creator    = Text
 
--- | Spec is message specification.
+-- | 'Spec' is message specification
 --
 type Spec       = Text
 
+-- | 'Encrypted' is flag to represent that data of the message is encrypted or not
+--
 type Encrypted  = Bool
 
-type Signature  = ByteString
-
--- | 'Message' is the main entity in MQ: various components, controllers and the Scheduler communicate with each other using 'Message's.
+-- | 'Signature' is used for verification that message sent from trusted client or service
 --
-data Message = Message { msgId        :: Id          -- ^ str format family
-                       , msgPid       :: Id          -- ^ str format family
-                       , msgCreator   :: Creator     -- ^ str format family
-                       , msgCreatedAt :: Timestamp   -- ^ int format family
-                       , msgExpiresAt :: Timestamp   -- ^ int format family
-                       , msgSpec      :: Spec        -- ^ str format family
-                       , msgType      :: MessageType -- ^ str format family
-                       , msgData      :: ByteString  -- ^ bin format family
-                       , msgEncrypted :: Encrypted   -- ^ bool format family
-                       , msgSignature :: Signature   -- ^ bin format family
-                       }
-  deriving (Eq, Show, Read, Generic)
+type Signature  = ByteString
 
 -- | 'MessageType' describes valid message types in Monique.
 --
@@ -86,3 +76,31 @@ instance Read MessageType where
   readsPrec _ "error"  = [(Error, "")]
   readsPrec _ "data"   = [(Data, "")]
   readsPrec _ _        = []
+
+--------------------------------------------------------------------------------
+
+-- | 'Message' is the main entity in MQ: various components, controllers and the Scheduler communicate with each other using 'Message's.
+--
+data Message = Message { msgId        :: Id          -- ^ str format family
+                       , msgPid       :: Id          -- ^ str format family
+                       , msgCreator   :: Creator     -- ^ str format family
+                       , msgCreatedAt :: Timestamp   -- ^ int format family
+                       , msgExpiresAt :: Timestamp   -- ^ int format family
+                       , msgSpec      :: Spec        -- ^ str format family
+                       , msgType      :: MessageType -- ^ str format family
+                       , msgData      :: ByteString  -- ^ bin format family
+                       , msgEncrypted :: Encrypted   -- ^ bool format family
+                       , msgSignature :: Signature   -- ^ bin format family
+                       }
+  deriving (Eq, Show, Read, Generic)
+
+--------------------------------------------------------------------------------
+
+type PrivateKey = ByteString
+
+type PublicKey = ByteString
+
+data Secure = NotSecured
+            | Signed PrivateKey
+            | Encrypted PublicKey
+            | SignedAndEncrypted PrivateKey PublicKey
