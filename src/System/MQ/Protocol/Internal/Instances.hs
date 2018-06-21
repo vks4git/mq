@@ -12,23 +12,13 @@ import           Data.MessagePack.Types.Class      (MessagePack (..))
 import           Data.MessagePack.Types.Object     (Object)
 import           Data.Text                         (Text)
 import           System.MQ.Protocol.Internal.Types (Creator, Dictionary (..),
-                                                    Encoding, Id,
-                                                    Message (..),
-                                                    MessageType (..), Spec,
-                                                    Timestamp)
+                                                    Encrypted, Id, Message (..),
+                                                    MessageType (..), Signature,
+                                                    Spec, Timestamp)
 
 --------------------------------------------------------------------------------
 -- Convertation for Message to and from MessagePack
 --------------------------------------------------------------------------------
-
-infix .=
-(.=) :: (Ord a, MessagePack b) => a -> b -> (a, Object)
-a .= b = (a, toObject b)
-
-infix .!
-(.!) :: (Monad m, MessagePack b) => Map Text Object -> Text -> m b
-dict .! key | key `member` dict = fromObject $ dict ! key
-            | otherwise = error $ "System.MQ.Protocol.Internal.Instances: .! :: key " ++ show key ++ " is not an element of the dictionary."
 
 instance Dictionary Message where
   toDictionary Message{..} = fromList [ "id"         .= msgId
@@ -62,3 +52,12 @@ instance MessagePack Message where
 instance MessagePack MessageType where
   toObject = toObject . show
   fromObject = fmap read . fromObject
+
+infix .=
+(.=) :: (Ord a, MessagePack b) => a -> b -> (a, Object)
+a .= b = (a, toObject b)
+
+infix .!
+(.!) :: (Monad m, MessagePack b) => Map Text Object -> Text -> m b
+dict .! key | key `member` dict = fromObject $ dict ! key
+            | otherwise = error $ "System.MQ.Protocol.Internal.Instances: .! :: key " ++ show key ++ " is not an element of the dictionary."

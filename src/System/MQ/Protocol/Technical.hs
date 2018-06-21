@@ -13,8 +13,7 @@ import           Data.Aeson               (FromJSON (..), ToJSON (..),
 import           Data.Aeson.Casing        (aesonPrefix, snakeCase)
 import           GHC.Generics             (Generic)
 import           System.MQ.Encoding.JSON  as JSON (pack, unpack)
-import           System.MQ.Protocol       (Id, MessageType (..), Timestamp,
-                                           jsonEncoding)
+import           System.MQ.Protocol       (Id, MessageType (..), Timestamp)
 import           System.MQ.Protocol.Class (MessageLike (..), Props (..))
 
 -- | Configuration for kill task
@@ -30,9 +29,7 @@ instance FromJSON KillConfig where
   parseJSON = genericParseJSON $ aesonPrefix snakeCase
 
 instance MessageLike KillConfig where
-  props = Props "kill" Config jsonEncoding
-  pack = JSON.pack
-  unpack = JSON.unpack
+  props = Props "kill" Config
 
 -- | Format of data that is produced as result of monitoring task
 --
@@ -50,6 +47,4 @@ instance FromJSON MonitoringData where
   parseJSON = genericParseJSON $ aesonPrefix snakeCase
 
 instance MessageLike MonitoringData where
-  props = Props "monitoring" Data jsonEncoding
-  pack = JSON.pack
-  unpack = JSON.unpack
+  props = Props "monitoring" Data

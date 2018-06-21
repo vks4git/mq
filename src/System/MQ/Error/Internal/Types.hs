@@ -14,8 +14,9 @@ module System.MQ.Error.Internal.Types
   , errorIncorrectInput
   ) where
 
+import           Control.Exception (Exception (..), SomeException (..),
+                                    toException)
 import           GHC.Generics      (Generic)
-import           Control.Exception (Exception (..), SomeException (..), toException)
 import           Text.Printf       (printf)
 
 
