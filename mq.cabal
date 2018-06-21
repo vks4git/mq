@@ -35,8 +35,7 @@ library
                      , System.MQ.Protocol.Class
                      , System.MQ.Error
                      , System.MQ.Monad
-                     -- , System.MQ.Encoding.MessagePack
-                     -- , System.MQ.Encoding.JSON
+                     , System.MQ.Encoding.MessagePack
   other-modules:       System.MQ.Protocol.Internal.Types
                      , System.MQ.Protocol.Internal.Functions
                      , System.MQ.Protocol.Internal.Instances

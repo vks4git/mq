@@ -75,5 +75,5 @@ runSchedulerLogic NetConfig{..} LogicConfig{..} = do
     processKillMsg :: PushChannel -> Message -> MQMonad ()
     processKillMsg toSchedulerOut Message{..} = do
         killId <- killTaskId <$> unpackM msgData
-        newMsg <- createMessage killId msgCreator msgExpiresAt (MQError errorKilled "task killed")
+        newMsg <- createMessage killId msgCreator msgExpiresAt msgEncrypted msgSignature (MQError errorKilled "task killed")
         T.push toSchedulerOut newMsg

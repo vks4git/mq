@@ -8,14 +8,15 @@ module System.MQ.Protocol.Technical
   , MonitoringData (..)
   ) where
 
-import           Data.Aeson               (FromJSON (..), ToJSON (..),
-                                           genericParseJSON, genericToJSON)
-import           Data.Aeson.Casing        (aesonPrefix, snakeCase)
-import           GHC.Generics             (Generic)
-import           System.MQ.Encoding.JSON  as JSON (pack, unpack)
-import           System.MQ.Protocol       (Id, MessageType (..), Timestamp)
-import           System.MQ.Protocol.Class (MessageLike (..), Props (..))
+import           Data.Aeson                   (FromJSON (..), ToJSON (..),
+                                               genericParseJSON, genericToJSON)
+import           Data.Aeson.Casing            (aesonPrefix, snakeCase)
+import           Data.MessagePack.Types.Class (MessagePack (..))
+import           GHC.Generics                 (Generic)
+import           System.MQ.Protocol           (Id, MessageType (..), Timestamp)
+import           System.MQ.Protocol.Class     (MessageLike (..), Props (..))
 
+--------------------------------------------------------------------------------
 -- | Configuration for kill task
 --
 newtype KillConfig = KillConfig { killTaskId :: Id
@@ -28,9 +29,12 @@ instance ToJSON KillConfig where
 instance FromJSON KillConfig where
   parseJSON = genericParseJSON $ aesonPrefix snakeCase
 
+instance MessagePack KillConfig
+
 instance MessageLike KillConfig where
   props = Props "kill" Config
 
+--------------------------------------------------------------------------------
 -- | Format of data that is produced as result of monitoring task
 --
 data MonitoringData = MonitoringData { mSyncTime :: Timestamp
@@ -45,6 +49,8 @@ instance ToJSON MonitoringData where
 
 instance FromJSON MonitoringData where
   parseJSON = genericParseJSON $ aesonPrefix snakeCase
+
+instance MessagePack MonitoringData
 
 instance MessageLike MonitoringData where
   props = Props "monitoring" Data

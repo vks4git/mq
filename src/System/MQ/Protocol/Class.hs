@@ -4,9 +4,6 @@ module System.MQ.Protocol.Class
   (
     MessageLike (..)
   , Props (..)
-  , packMP
-  , unpackMP
-  , unpackMPMonad
   ) where
 
 import           Control.Monad.Except              (throwError)

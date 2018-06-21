@@ -7,7 +7,7 @@ import           Data.Aeson                     (FromJSON (..), ToJSON (..),
                                                  genericParseJSON,
                                                  genericToJSON)
 import           Data.Aeson.Casing              (aesonPrefix, snakeCase)
-import qualified System.MQ.Encoding.JSON        as JSON (pack, unpack)
+import           Data.MessagePack.Types.Class   (MessagePack (..))
 import           System.MQ.Error.Internal.Types (MQError (..))
 import           System.MQ.Protocol             (MessageType (..))
 import           System.MQ.Protocol.Class       (MessageLike (..), Props (..))
@@ -18,6 +18,12 @@ instance ToJSON MQError where
 instance FromJSON MQError where
   parseJSON = genericParseJSON $ aesonPrefix snakeCase
 
+instance MessagePack MQError where
+  toObject = undefined
+  fromObject = undefined
+
 instance MessageLike MQError where
   props = Props "error" Error
+
+
 
