@@ -7,7 +7,7 @@ module System.MQ.Transport
   , sub
   ) where
 
-import           System.MQ.Encoding.MessagePack         (pack, unpackM)
+import           System.MQ.Encoding.Pack                (pack, unpackM)
 import           System.MQ.Monad                        (MQMonadS)
 import           System.MQ.Protocol                     (Message, MessageTag,
                                                          messageTag)

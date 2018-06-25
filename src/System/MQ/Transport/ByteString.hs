@@ -13,7 +13,7 @@ import qualified Data.ByteString                    as BS (ByteString)
 import           Data.List.NonEmpty                 (NonEmpty (..))
 import           Data.Maybe                         (fromJust, isJust)
 import           Data.Text                          as T (Text, split)
-import qualified System.MQ.Encoding.MessagePack     as MP (pack, unpack)
+import qualified System.MQ.Encoding.Pack            as MP (pack, unpack)
 import           System.MQ.Error                    (MQError (..), errorTag,
                                                      errorTransport)
 import           System.MQ.Monad                    (MQMonadS)

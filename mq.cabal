@@ -36,11 +36,14 @@ library
                      , System.MQ.Error
                      , System.MQ.Monad
                      , System.MQ.Encoding.MessagePack
+                     , System.MQ.Encoding.Pack
   other-modules:       System.MQ.Protocol.Internal.Types
                      , System.MQ.Protocol.Internal.Functions
                      , System.MQ.Protocol.Internal.Instances
                      , System.MQ.Protocol.Internal.Tag
                      , System.MQ.Protocol.Internal.Condition
+
+                     , System.MQ.Encoding.MessagePack.Internal.Template
 
                      , System.MQ.Error.Internal.Types
                      , System.MQ.Error.Internal.Instances
@@ -58,16 +61,20 @@ library
                      , aeson-picker
                      , bcd-config
                      , bytestring
+                     , cases
                      , clock
                      , containers
                      , data-msgpack
                      , data-msgpack-types
                      , hslogger
+                     , lens
                      , mtl
                      , random
                      , semigroups
                      , split
+                     , template-haskell
                      , text
+                     , th-lift-instances
                      , zeromq4-haskell
   ghc-options:         -Wall -O2
   default-language:    Haskell2010
