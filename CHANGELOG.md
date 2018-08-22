@@ -6,7 +6,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
-## [0.1.6.0] - 2018-07-03
+## [0.1.6.1] - 2018-08-22
+### Changed
+- Not fail when incorrect tag received.
+
+## [0.1.6.0] - 2018-08-21
 ### Changed
 - `Hash` (binary) changed to `Id` (string).
 - Message ID now is generated randomly.

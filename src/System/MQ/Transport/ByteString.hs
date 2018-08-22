@@ -12,7 +12,7 @@ import           Control.Monad.Except
 import qualified Data.ByteString                    as BS (ByteString)
 import           Data.List.NonEmpty                 (NonEmpty (..))
 import           Data.Text                          as T (Text, split)
-import           Data.Text.Encoding                 (decodeUtf8, encodeUtf8)
+import           Data.Text.Encoding                 (decodeUtf8', encodeUtf8)
 import           System.MQ.Error                    (MQError (..), errorTag, errorTransport)
 import           System.MQ.Monad                    (MQMonadS)
 import           System.MQ.Protocol                 (MessageTag, delimiter)
@@ -50,15 +50,13 @@ processMessage [msgTag, msgContent] =
 processMessage _ = throwError $ MQError errorTransport "Expected [tag, content]"
 
 checkTag :: BS.ByteString -> Either MQError MessageTag
-checkTag bs = if length delimited == 5 && head delimited `elem` msgTypes
-              then Right tagUnpackedM
+checkTag bs = do
+    tagUnpacked   <- either (\_ -> Left $ MQError errorTag $ "could not decode UTF8: " ++ show bs) Right (decodeUtf8' bs)
+    let delimited = T.split ( == delimiter) tagUnpacked
+
+    if length delimited == 5 && head delimited `elem` msgTypes
+              then Right tagUnpacked
               else Left . MQError errorTag $ "tag is not valid: " ++ show bs
   where
-    tagUnpackedM :: Text
-    tagUnpackedM = decodeUtf8 bs
-
-    delimited :: [Text]
-    delimited = T.split ( == delimiter) tagUnpackedM
-
     msgTypes :: [Text]
     msgTypes = ["config", "result", "data", "error"]
