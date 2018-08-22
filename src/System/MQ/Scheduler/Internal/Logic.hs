@@ -8,7 +8,7 @@ module System.MQ.Scheduler.Internal.Logic
 
 import           Control.Concurrent                  (forkIO)
 import           Control.Monad                       (when)
-import           Data.String                         (IsString (..))
+import           Data.Text                           (Text)
 import           System.Log.Logger                   (infoM)
 import           System.MQ.Error                     (MQError (..), errorKilled)
 import           System.MQ.Monad                     (MQMonad, foreverSafe,
@@ -50,7 +50,7 @@ runSchedulerLogic NetConfig{..} LogicConfig{..} = do
         foreverSafe name $ comLogic allowMessages fromInToLogic fromLogictoWorld
 
     -- | Function with scheduler logic.
-    comLogic :: [String] -> PullChannel -> PushChannel -> MQMonad ()
+    comLogic :: [Text] -> PullChannel -> PushChannel -> MQMonad ()
     -- if list of allow messages is empty then send every message further
     --
     comLogic [] fromIn toOut = pull fromIn >>= push toOut
@@ -70,7 +70,7 @@ runSchedulerLogic NetConfig{..} LogicConfig{..} = do
         toSchedulerOut   <- connectTo (comHostPort schedulerLogicOut) context'
         foreverSafe name $ do
           (tag, msg) <- T.pull fromInToLogic
-          when (messageSpec tag == fromString (spec (props :: Props KillConfig))) $ processKillMsg toSchedulerOut msg
+          when (messageSpec tag == spec (props :: Props KillConfig)) $ processKillMsg toSchedulerOut msg
           T.push fromLogicToWorld msg
 
     processKillMsg :: PushChannel -> Message -> MQMonad ()

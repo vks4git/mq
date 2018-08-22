@@ -5,7 +5,7 @@
 
 module System.MQ.Protocol.Internal.Functions
   (
-    emptyHash
+    emptyId
   , notExpires
   , jsonEncoding
   , mkId
@@ -15,28 +15,26 @@ module System.MQ.Protocol.Internal.Functions
   , getTimeMillis
   ) where
 
-import           Control.Monad                     (when)
+import           Control.Monad                     (replicateM, when)
 import           Control.Monad.Except              (throwError)
 import           Control.Monad.IO.Class            (MonadIO, liftIO)
-import           Crypto.Hash.SHA1                  (hash)
-import           Data.ByteString                   as BS (ByteString,
-                                                          intercalate)
-import           Data.ByteString.Base64            as Base64 (encode)
-import           Data.String                       (IsString (..))
+import           Data.ByteString                   as BS (ByteString)
+import           Data.Text                         as T (pack)
 import           System.Clock                      (Clock (..), getTime,
                                                     toNanoSecs)
 import           System.MQ.Error.Internal.Types    (MQError (..), errorEncoding)
 import           System.MQ.Monad                   (MQMonadS)
-import           System.MQ.Protocol.Class          (MessageLike (..),
-                                                    Props (..))
-import           System.MQ.Protocol.Internal.Types (Creator, Encoding, Hash,
+import           System.MQ.Protocol.Class          as MQClass (MessageLike (..),
+                                                               Props (..))
+import           System.MQ.Protocol.Internal.Types (Creator, Encoding, Id,
                                                     Message (..), MessageType,
                                                     Spec, Timestamp)
+import           System.Random                     (getStdRandom, randomR)
 
 -- | Creates 'Hash' with empty content.
 --
-emptyHash :: Hash
-emptyHash = ""
+emptyId :: Id
+emptyId = ""
 
 -- | If message has no expiration time then this function can be used.
 --
@@ -56,18 +54,18 @@ msgpackEncoding = "MessagePack"
 -- | Creates new message.
 --
 createMessage :: forall a s. MessageLike a
-              => Hash      -- ^ parent message id
+              => Id        -- ^ parent message id
               -> Creator   -- ^ message creator id
               -> Timestamp -- ^ message expiration time
               -> a         -- ^ message data
               -> MQMonadS s Message
-createMessage mPid mCreator mExpires (pack -> mData) = do
-    let Props{..}   = props :: Props a
+createMessage mPid mCreator mExpires (MQClass.pack -> mData) = do
+    let Props{..} = props :: Props a
     createMessageBS mPid mCreator mExpires spec encoding mtype mData
 
 -- | Creates new message using already encoded data.
 --
-createMessageBS :: Hash          -- ^ parent message id
+createMessageBS :: Id            -- ^ parent message id
                 -> Creator       -- ^ message creator id
                 -> Timestamp     -- ^ message expiration time
                 -> Spec          -- ^ spec of message
@@ -77,7 +75,8 @@ createMessageBS :: Hash          -- ^ parent message id
                 -> MQMonadS s Message
 createMessageBS mPid mCreator mExpires spec' encoding' mtype' mData = do
     when (encoding' /= jsonEncoding && encoding' /= msgpackEncoding) $ throwError encodingEr
-    (mId, mCreated) <- mkId mCreator spec'
+    mCreated <- getTimeMillis
+    mId <- mkId
     pure $ Message mId mPid mCreator mCreated mExpires spec' encoding' mtype' mData
   where
     encodingEr = MQError errorEncoding "unknown encoding"
@@ -87,21 +86,27 @@ createMessageBS mPid mCreator mExpires spec' encoding' mtype' mData = do
 getTimeMillis :: MonadIO m => m Timestamp
 getTimeMillis = (`div` 10^(6::Int)) <$> getTimeNano
 
--- | Creates id 'Hash' and created time from 'Creator' and 'Spec'.
--- ATTENTION: identificator is in Base64 encoding.
+-- | Creates 'Id' for the message.
 --
-mkId :: MonadIO m => Creator -> Spec -> m (Hash, Timestamp)
-mkId mCreator mSpec = do
-    mCreated <- getTimeMillis
-    let mId = Base64.encode . hash . intercalate ":" $ [fromString mCreator, timestampToBS mCreated, fromString mSpec]
-    pure (mId, mCreated)
+mkId :: MonadIO m => m Id
+mkId = do
+    randomNumbers <- liftIO $ replicateM idLength $ getStdRandom (randomR (0, alphabetLength))
+    pure . T.pack $ (alphabet !!) <$> randomNumbers
+  where
+    idLength :: Int
+    idLength = 40
+
+
 
 --------------------------------------------------------------------------------
 -- INTERNAL
 --------------------------------------------------------------------------------
 
+alphabet :: String
+alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
+
+alphabetLength :: Int
+alphabetLength = length alphabet - 1
+
 getTimeNano :: MonadIO m => m Timestamp
 getTimeNano = liftIO $ fromIntegral . toNanoSecs <$> getTime Realtime
-
-timestampToBS :: Timestamp -> ByteString
-timestampToBS = fromString . show

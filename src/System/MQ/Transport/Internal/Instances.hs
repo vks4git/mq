@@ -7,11 +7,14 @@
 module System.MQ.Transport.Internal.Instances () where
 
 import           Control.Monad.IO.Class             (MonadIO, liftIO)
+import           Data.Text                          as T (intercalate, pack)
+import           Data.Text.Encoding                 (encodeUtf8)
 import           System.MQ.Transport.Internal.Types
 import           System.ZMQ4                        (Pub (..), Pull (..),
                                                      Push (..), Socket,
                                                      SocketType, Sub (..), bind,
-                                                     connect, socket, subscribe)
+                                                     connect, socket, subscribe,
+                                                     unsubscribe)
 
 instance ConnectTo PushChannel where
   connectTo HostPort{..} context' = createAndConnect context' Push host port
@@ -23,10 +26,7 @@ instance ConnectTo PubChannel where
   connectTo HostPort{..} context' = createAndConnect context' Pub host port
 
 instance ConnectTo SubChannel where
-  connectTo HostPort{..} context' = do
-    socket' <- createAndConnect context' Sub host port
-    liftIO $ subscribe socket' ""
-    pure socket'
+  connectTo HostPort{..} context' = createAndConnect context' Sub host port
 
 instance BindTo PushChannel where
   bindTo HostPort{..} context' = createAndBind context' Push host port
@@ -38,10 +38,20 @@ instance BindTo PubChannel where
   bindTo HostPort{..} context' = createAndBind context' Pub host port
 
 instance BindTo SubChannel where
-  bindTo HostPort{..} context' = do
-    socket' <- createAndBind context' Sub host port
-    liftIO $ subscribe socket' ""
-    pure socket'
+  bindTo HostPort{..} context' = createAndBind context' Sub host port
+
+instance Subscribe SubChannel where
+  subscribeTo socket' topic = liftIO . subscribe socket' $ encodeUtf8 topic
+
+  subscribeToTypeSpec socket' type' spec' =
+      let topic = T.intercalate ":" [T.pack . show $ type', spec']
+      in subscribeTo socket' topic
+
+  unsubscribeFrom socket' topic = liftIO . unsubscribe socket' $ encodeUtf8 topic
+
+  unsubscribeFromTypeSpec socket' type' spec' =
+      let topic = T.intercalate ":" [T.pack . show $ type', spec']
+      in unsubscribeFrom socket' topic
 
 --------------------------------------------------
 -- INTERNAL

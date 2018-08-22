@@ -1,3 +1,5 @@
+{-# LANGUAGE OverloadedStrings #-}
+
 module System.MQ.Transport.Internal.Types
   (
     Host
@@ -9,8 +11,10 @@ module System.MQ.Transport.Internal.Types
   , SubChannel
   , ConnectTo (..)
   , BindTo (..)
+  , Subscribe (..)
   , System.ZMQ4.Context
   , anyHost
+  , allTopics
   , closeM
   , contextM
   , localHost
@@ -19,7 +23,9 @@ module System.MQ.Transport.Internal.Types
   ) where
 
 import           Control.Monad.IO.Class (MonadIO, liftIO)
+import           Data.Text              (Text)
 import           System.MQ.Monad        (MQMonadS)
+import           System.MQ.Protocol     (MessageType, Spec)
 import           System.ZMQ4            (Context, Pub, Pull, Push, Socket, Sub,
                                          close, context, term)
 import           Text.Printf            (printf)
@@ -64,10 +70,26 @@ class ConnectTo a where
 class BindTo a where
   bindTo :: MonadIO m => HostPort -> Context -> m a
 
+-- | Class to subscribe and unsubscribe channel to topics
+--
+class Subscribe a where
+  subscribeTo :: MonadIO m => a -> Text -> m ()
+
+  subscribeToTypeSpec :: MonadIO m => a -> MessageType -> Spec -> m ()
+
+  unsubscribeFrom :: MonadIO m => a -> Text -> m ()
+  
+  unsubscribeFromTypeSpec :: MonadIO m => a -> MessageType -> Spec -> m ()
+
 -- | Sometimes wildcald host is needed for connections
 --
 anyHost :: Host
 anyHost = "*"
+
+-- | Describes any topic to subscribe, like a wildcard
+--
+allTopics :: Text
+allTopics = ""
 
 -- | Alias for localhost
 --

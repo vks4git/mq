@@ -15,13 +15,14 @@ module System.MQ.Scheduler.Internal.Config
 
 import           Data.Aeson          (FromJSON (..))
 import           Data.Aeson.Picker   ((|--))
+import           Data.Text           (Text)
 import           GHC.Generics        (Generic)
 import           System.BCD.Config   (getConfigText)
 import           System.MQ.Transport (Host, HostPort (..), Port)
 
 -- | Contains scheduler logic configuration.
 --
-newtype LogicConfig = LogicConfig { allowMessages :: [String] }
+newtype LogicConfig = LogicConfig { allowMessages :: [Text] }
 
 -- | Loads scheduler logic configuration from config.json.
 --
