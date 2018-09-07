@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [0.1.6.2] - 2018-09-04
+### Changed
+- Fixed bug with subscriptions to all specs with given prefix.
+
 ## [0.1.6.1] - 2018-08-22
 ### Changed
 - Not fail when incorrect tag received.

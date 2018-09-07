@@ -7,7 +7,8 @@
 module System.MQ.Transport.Internal.Instances () where
 
 import           Control.Monad.IO.Class             (MonadIO, liftIO)
-import           Data.Text                          as T (intercalate, pack)
+import           Data.Text                          as T (intercalate, pack,
+                                                          snoc)
 import           Data.Text.Encoding                 (encodeUtf8)
 import           System.MQ.Transport.Internal.Types
 import           System.ZMQ4                        (Pub (..), Pull (..),
@@ -44,13 +45,13 @@ instance Subscribe SubChannel where
   subscribeTo socket' topic = liftIO . subscribe socket' $ encodeUtf8 topic
 
   subscribeToTypeSpec socket' type' spec' =
-      let topic = T.intercalate ":" [T.pack . show $ type', spec']
+      let topic = T.intercalate ":" [T.pack . show $ type', spec'] `T.snoc` ':'
       in subscribeTo socket' topic
 
   unsubscribeFrom socket' topic = liftIO . unsubscribe socket' $ encodeUtf8 topic
 
   unsubscribeFromTypeSpec socket' type' spec' =
-      let topic = T.intercalate ":" [T.pack . show $ type', spec']
+      let topic = T.intercalate ":" [T.pack . show $ type', spec'] `T.snoc` ':'
       in unsubscribeFrom socket' topic
 
 --------------------------------------------------
